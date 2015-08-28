@@ -45,7 +45,7 @@ module GitBranchHookPlugin
           git_cmd(cmd_brargs) do |io|
             io.each_line do |line|
               latest_line = line
-              if (line =~ /\* ([^#]*#([0-9]+).*)$/) && ($2 != nil)
+              if (line =~ /\* (\D*#(\d{4,}).*)$/) && ($2 != nil)
                 return $1,$2
               end
             end
@@ -54,13 +54,13 @@ module GitBranchHookPlugin
           scm_cmd *cmd_brargs do |io|
             io.each_line do |line|
               latest_line = line
-              if (line =~ /\* ([^#]*#([0-9]+).*)$/) && ($2 != nil)
+              if (line =~ /\* (\D*#(\d{4,}).*)$/) && ($2 != nil)
                 return $1,$2
               end
             end
           end
         end
-        if (latest_line =~ /  ([^#]*#([0-9]+).*)$/) && ($2 != nil)
+        if (latest_line =~ /  (\D*#(\d{4,}).*)$/) && ($2 != nil)
           return $1,$2
         end
         [nil,nil]
@@ -86,7 +86,7 @@ module GitBranchHookPlugin
               issue_pattern = Regexp.new('(#[\d]+)')
               if (branch =~ issue_pattern) && (Setting.plugin_redmine_git_branch_hook['close_by_merge'] == '1')
                   logger.info(rev.identifier + " : CLOSE " + $1 + " by Merge " + branch + "\n")
-                  rev.message << '(closes ' << $1 << ')'
+                  rev.message << '(merges ' << $1 << ')'
               end
             else 
               if current_branch =~ /[^#]*#([0-9]+).*/
